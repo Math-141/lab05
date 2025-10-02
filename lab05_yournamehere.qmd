@@ -1,0 +1,499 @@
+---
+title: "Lab 5"
+subtitle: "Math 141, Week 5"
+author: "Insert Your Name Here"
+format: pdf
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+## Due: Thursday, October 9th at 9am on Gradescope
+
+
+In this lab, you will
+
+  1. Conduct exploratory data analysis.
+  2. Build linear regression models.
+  3. Interpret the estimated coefficients of linear regression models.
+  4. Interpret a varying slopes linear regression model.
+
+## Add any collaborators here!
+
+I collaborated with...
+
+**Remember that you are not allowed to use any generative AI models (like ChatGPT) on your lab.**
+
+
+## Problems
+
+- For this lab, you don't need to worry about labels and a title for your plots **unless a question specifies otherwise**.
+- Run the following chunk to load the necessary packages.
+
+```{r}
+#load the necessary packages
+library(tidyverse)
+library(gglm)
+library(pdxTrees)
+library(moderndive)
+```
+
+
+### Problem 1
+
+During lecture we collected data to see if our class exhibits an "anchoring effect". The anchoring effect is a cognitive bias in which an individual's decisions in an uncertain situation are reliant on the first piece of information received. Half of you received the number $x = 82$ and the other half the number $x = 531$ and then you took a survey. The numbers were handed out at random. We want to answer the following question: Does the number received serve as an anchor value for answering the second question?  In other words, does the number seem to serve as a starting point when estimating the number of dog breeds in the world? 
+
+As a reminder, [here is the survey with the survey questions](https://forms.gle/WvG37qqR1AeWaeNf9).
+
+
+```{r}
+#load the data
+load("data/dogs.Rdata")
+```
+
+
+a) What are the cases (i.e., observational units) in our study?
+
+********************************************************************
+
+
+
+********************************************************************
+
+b) Describe the response variable and the explanatory variable in our study.
+
+
+********************************************************************
+
+
+
+********************************************************************
+
+c) Does this study design have the potential to demonstrate a causal effect? Explain your reasoning.
+
+********************************************************************
+
+
+
+********************************************************************
+
+d) Describe how blindness was used in this study. Do you think blindness was important to incorporate into this study? Explain your reasoning.
+
+********************************************************************
+
+
+
+********************************************************************
+
+e) Construct a visualization showing the relationship between the response and explanatory variables. (*Hint*: Use `coord_cartesian()` to zoom into a specific portion of a plot.) Draw some conclusions based on the visualization; reference summary statistics to support your conclusions.
+
+
+```{r}
+
+```
+
+
+********************************************************************
+
+
+
+********************************************************************
+
+
+f) Fit a linear model to the study data and interpret the estimated model coefficients.
+
+
+```{r}
+
+```
+
+
+********************************************************************
+
+
+
+********************************************************************
+
+
+
+g) Do these data seem to indicate evidence of an anchoring effect? Explain your answer.
+
+
+********************************************************************
+
+
+
+********************************************************************
+
+h) To what extent could these results be reasonably generalized to some population? Explain your reasoning. 
+
+
+********************************************************************
+
+
+
+********************************************************************
+
+
+### Problem 2
+
+This exercise uses data about trees from the parks near Reed. Run the code below to get the data.
+
+```{r}
+# Grab trees near Reed
+near_reed <- get_pdxTrees_parks() %>%
+  filter(Park %in% c("Crystal Springs Rhododendron Garden",
+                      "Kenilworth Park", 
+                      "Eastmoreland Garden",
+                      "Berkeley Park")) %>% 
+  drop_na(Functional_Type)
+```
+
+
+The crown of a tree refers to its total above-ground parts, including stems, branches, and leaves. In the `near_reed` dataframe, `Crown_Width_EW` represents the greatest width of the crown in the east-west direction, while `Crown_Width_NS` represents the greatest width of the crown in the north-south direction. The code below adds a new variable to the `near_reed` dataframe called `Crown_Width` which is the average of `Crown_Width_EW` and `Crown_Width_NS`.
+
+```{r}
+near_reed <- near_reed %>%
+  mutate(Crown_Width = (Crown_Width_EW+Crown_Width_NS)/2 )
+```
+
+
+a) Generate a scatterplot with `Crown_Width` as the explanatory variable and `Tree_Height` as the response. Be sure to include an informative title and axis labels to your plot.
+
+
+```{r}
+
+```
+
+
+b) Do you expect the correlation coefficient (for `Crown_Width` and `Tree_Height`) to be positive or negative? Write code chunk testing your prediction.
+
+```{r}
+
+```
+
+********************************************************************
+
+
+
+********************************************************************
+
+c) Using the `near_reed` data frame, run a linear regression using `Crown_Width` as the explanatory variable and `Tree_Height` as the outcome variable. Using the `get_regression_table` function, display a table of coefficients.
+
+
+```{r}
+
+```
+
+
+
+d) Carefully interpret the estimated coefficients for the intercept and the slope term for Crown Width, *in context*.
+
+
+********************************************************************
+
+
+
+********************************************************************
+
+e) Make a numerical prediction for the `Tree_Height` for a tree that has 40 foot crown width, both using the formula for the linear model you created in the previous exercise **and** by using the `predict()` function.
+
+```{r}
+
+```
+
+
+f) Create a residual vs fitted plot. Do the residuals appear to have relatively constant variability across the fitted values?
+
+
+```{r}
+
+```
+
+
+********************************************************************
+
+
+
+********************************************************************
+
+
+
+g) Create a histogram of the residual values and a QQ plot. Does the distribution appear to be bell-shaped, unimodal, symmetric and centered at $0$? Does the QQ plot seem reasonable?
+
+```{r}
+
+```
+
+
+********************************************************************
+
+
+
+
+********************************************************************
+
+
+
+### Problem 3
+
+Problems 3 & 4 use a version of the Opportunity Insights dataset introduced in Lab 3 that has been joined with a dataset from The National Association of College and University Business Officers containing information on university endowment assets from 2016.\footnote{Specifically, the endowment data are from fiscal year 2016, which began on June 1, 2015 and ended on May 31, 2016. For the purposes of Math 141, it is fine to simply refer to these data as being collected in 2016.} The data are in the file `colleges_endow.Rdata`; for simplicity, the data frame is named `colleges`. The following table provides a list of the variables in the dataset and their descriptions. (Note: It is easier to read the table in the Rendered PDF document.)
+
+\begin{center}
+\begin{tabular}{r|l}
+\textbf{Variable} & \textbf{Description} \\
+\hline
+\texttt{name} & name of college \\
+\texttt{region} & region, \texttt{1} for Northeast, \texttt{2} for Midwest, \texttt{3} for South, and \texttt{4} for West \\
+\texttt{state} & state \\
+\texttt{tier\_name} & tier defined by selectivity and type \\
+\texttt{type} & coded \texttt{1} for public, \texttt{2} for private non-profit, \texttt{3} for for-profit \\
+\texttt{exp\_instr\_pc\_2013} & instructional expenditures per student in 2013 \\
+\texttt{ipeds\_enrollment\_2013} & total undergraduate enrollment in Fall 2013 \\
+\texttt{sticker\_price\_2013} & average annual cost of attendance in 2013 \\
+\texttt{scorecard\_netprice\_2013} & net annual cost of attendance for bottom income quintile in 2013 \\
+\texttt{grad\_rate\_150\_p\_2013} & percentage of students graduating within 150\% of normal time in 2013 \\
+\texttt{avgfacsal\_2013} & average faculty salary in 2013 \\
+\texttt{sat\_avg\_2013} & average SAT scores (scaled to 1600) in 2013 \\
+\texttt{endowment\_pc\_2000} & endowment assets per student in 2000 \\
+\texttt{mr\_kq5\_pq1} & mobility rate, top 20\% of the income distribution \\
+\texttt{mr\_ktop1\_pq1} & mobility rate, top 1\% of the income distribution \\
+\texttt{par\_median} & median parent household income \\
+\texttt{par\_q1} & fraction of parents in first (bottom) income quintile \\
+\texttt{par\_q2} & fraction of parents in second income quintile \\
+\texttt{par\_q3} & fraction of parents in third income quintile \\
+\texttt{par\_q4} & fraction of parents in fourth income quintile \\
+\texttt{par\_q5} & fraction of parents in fifth (top) income quintile  \\
+\texttt{par\_top5pc} & fraction of parents in top 5\% of income distribution \\
+\texttt{par\_top1pc} & fraction of parents in top 1\% of income distribution \\
+\texttt{k\_median} & median child individual earnings in 2014 (at age 34) \\
+\texttt{k\_top5pc} & fraction of children in top 5\% of income distribution \\
+\texttt{k\_top1pc} & fraction of children in top 1\% of income distribution \\
+\texttt{fy2016\_endowment\_pc} & endowment assests per student in 2016 \\
+\texttt{fy2016\_endowment\_thousands} & total value of endowment in thousands USD in 2016 \\
+\end{tabular}
+\end{center}
+
+Run the following R chunk to load the `colleges` data frame.
+
+```{r}
+load("data/colleges_endow.Rdata")
+```
+
+One metric of college access is net tuition price for low- and middle-income students after accounting for financial aid. The `scorecard_netprice_2013` variable contains data on the net annual cost of attendance for students with parental household income in the bottom quintile (in 2013); these data come from the U.S. Department of Education's College Scorecard. 
+
+A university's endowment refers to the financial assets invested by a university to support its educational and research mission; individuals and organizations can donate to contribute to a university's endowment. The `fy2016_endowment_pc` variable contains data on the monetary value of endowment assets per student (in 2016), measured in USD.
+
+Let's investigate the association between college access and endowment assets by building a model for college access using endowment assets. 
+
+a) First, explore both the net tuition price variable and endowment assets variable individually. Describe the distribution of each variable in the context of the data, referencing numerical and graphical summaries as needed.
+
+    
+```{r}
+
+```
+    
+
+********************************************************************
+
+
+
+
+********************************************************************
+
+
+
+b) Construct a plot showing the association between net tuition price and endowment assets. Be sure to map the response variable to the $y$-axis and the explanatory variable to the $x$-axis.
+
+```{r}
+
+```
+
+
+
+c) Describe what the plot in part b) shows; i.e., based on the plot, does there seem to be a relationship between college access and endowment assets? Does a line seem like a reasonable summary for the relationship between these variables? Explain your reasoning.
+
+********************************************************************
+
+
+
+********************************************************************
+
+d) Add a variable to the `colleges` dataset that contains the log-transformed version of `fy2016_endowment_pc` and name it `log_endow_pc`. That is, if `fy2016_endowment_pc` equals \$1000, then the log-transformed version equals $\log(1000) = \ln(1000) = 6.908$. Statisticians tend to refer to natural log as log. The function in R to compute the (natural) log is `log()`.
+
+```{r}
+
+```
+
+e) Recreate the plot from part b), but use the log-transformed version of `fy2016_endowment_pc` rather than the original variable. 
+
+```{r}
+
+```
+
+f) Based on the plot in part e), does a line seem like a reasonable summary of the relationship between net tuition price and log-transformed endowment assets? If so, calculate the correlation coefficient and interpret the sign and magnitude.
+
+```{r}
+
+```
+
+********************************************************************
+
+
+
+********************************************************************
+
+
+
+g) Construct a simple linear regression model for net tuition price using the log-transformed endowment assets variable. Print out the model coefficients table and create a plot of the data that shows the least squares line. Finally, check the model diagnostics and comment on them. 
+
+```{r}
+
+```
+
+********************************************************************
+
+
+
+********************************************************************
+
+h) What does the model from part g) predict Reed's net tuition price for low- to middle-income students to be? Reed is labeled as `Reed College` in the dataset. Compare the model prediction to the actual observed price; does the level of access for low- to middle-income students at Reed seem to be better or worse than expected based on the value of Reed's endowment assets?
+
+
+```{r}
+
+```
+
+********************************************************************
+
+
+
+
+********************************************************************
+
+
+
+i) Would you be comfortable generalizing the conclusions of this model to all colleges in the United States? Explain your reasoning.
+
+
+********************************************************************
+
+
+
+
+********************************************************************
+
+
+
+### Problem 4
+
+In this problem, we will investigate whether the relationship between net tuition price for low- and middle-income students and endowment value seems to differ for Ivy Plus schools versus other schools.
+
+a) Create a new variable that categorizes whether or not a school is Ivy Plus.
+
+```{r}
+
+```
+
+b) Construct a plot showing the association between net tuition price and log-transformed endowment assets; color the points based on whether a school is in the Ivy Plus. Describe what you see. How does the average net tuition price for low- and middle-income students at Ivy Plus schools compare to other schools?
+
+
+```{r}
+
+```
+
+********************************************************************
+
+
+
+********************************************************************
+
+c) Construct a linear regression model for net tuition price using log-transformed endowment assets and whether a school is categorized as Ivy Plus. Assume equal slopes in the model. Print the model coefficients table and interpret the coefficients in the context of the data. Be sure to comment on whether the intercept makes sense in this context. Also, check the model diagnostics and comment on them. 
+
+```{r}
+
+```
+
+********************************************************************
+
+
+
+
+********************************************************************
+
+
+
+d) In part b), you estimated the difference in average net tuition price for low- to middle-income students at schools in the Ivy Plus versus schools not in the Ivy Plus. Explain the reasoning behind why this difference is not equal to the coefficient for the Ivy Plus predictor variable in the model from part c).
+
+********************************************************************
+
+
+
+
+********************************************************************
+
+e) Construct a linear regression model for the net tuition price using log-transformed endowment assets and whether a school is categorized as Ivy Plus. Assume varying slopes in the model. Check the model diagnostics and comment on them. Based on this model, what is the estimated slope for schools in the Ivy Plus and what is the estimated slope for non-Ivy Plus schools?
+
+```{r}
+
+```
+
+********************************************************************
+
+
+
+
+********************************************************************
+
+
+f) Produce a plot that illustrates the linear model fit in part e). Based on this plot and your previous analyses, is there evidence suggesting that making a donation to a school's endowment increases access for low- and middle-income students to the same extent at Ivy Plus schools as non-Ivy Plus schools? Explain your reasoning. 
+
+```{r}
+
+```
+
+********************************************************************
+
+
+
+
+********************************************************************
+
+
+
+### Problem 5
+
+For this problem, we'll return to the `near_reed` dataset from Problem 2. 
+
+Your objective is simple: find a parsimonious, accurate, and sensible multiple linear regression model to predict tree height. As you embark on this mission, make sure to describe the steps you are taking in text along with the code you use to take those steps. 
+
+Once you've settled on a final model, write out the full model form and interpret two of its estimated coefficients in context. Discuss the signs of the estimated regression coefficients. Are they what you expected them to be? Discuss why your model is sensible for predicting tree height and justify your model building process.
+
+Make sure to "show your work" in your model building process, i.e. keep all code used, plots made, and writing necessary to talk about what you did to come to your final model. 
+
+Some considerations: 
+
+-   You will want to try out many models. Make plots and summaries of predictor variables and the response variable to get a sense of what might be useful to use in your model. Remember that you can run `?get_pdxTrees_parks()` in the console to get information about the data. 
+
+-   Be careful to consider multicolinearity. Some predictors in the dataset are highly correlated with each other. 
+
+-   You might want to consider polynomial terms in your model, or transforming predictor variables to better fit the model. 
+
+-   Make sure to check model diagnostics. 
+
+-   You can use $R^2$ and adjusted $R^2$ to help you compare the models. Don't worry if you don't know these terms yet, we'll introduce them on Friday Week 5.
+
+
+
+```{r}
+
+```
+
+
+********************************************************************
+
+
+
+
+********************************************************************
